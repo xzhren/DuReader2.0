@@ -45,7 +45,7 @@ def parse_args():
                         help='evaluate the model on dev set')
     parser.add_argument('--predict', action='store_true',
                         help='predict the answers for test set with trained model')
-    parser.add_argument('--gpu', type=str, default='0',
+    parser.add_argument('--gpu', type=str, default='2',
                         help='specify gpu device')
 
     train_settings = parser.add_argument_group('train settings')
@@ -61,6 +61,8 @@ def parse_args():
                                 help='train batch size')
     train_settings.add_argument('--epochs', type=int, default=10,
                                 help='train epochs')
+    train_settings.add_argument('--restore', type=bool, default=True,
+                                help='train restore model')
 
     model_settings = parser.add_argument_group('model settings')
     model_settings.add_argument('--algo', choices=['BIDAF', 'MLSTM'], default='BIDAF',
@@ -80,13 +82,13 @@ def parse_args():
 
     path_settings = parser.add_argument_group('path settings')
     path_settings.add_argument('--train_files', nargs='+',
-                               default=['../data/demo/trainset/search.train.json'],
+                               default=['../data/preprocessed/trainset/search.train.json'],
                                help='list of files that contain the preprocessed train data')
     path_settings.add_argument('--dev_files', nargs='+',
-                               default=['../data/demo/devset/search.dev.json'],
+                               default=['../data/preprocessed/devset/search.dev.json'],
                                help='list of files that contain the preprocessed dev data')
     path_settings.add_argument('--test_files', nargs='+',
-                               default=['../data/demo/testset/search.test.json'],
+                               default=['../data/preprocessed/testset/search.test.json'],
                                help='list of files that contain the preprocessed test data')
     path_settings.add_argument('--brc_dir', default='../data/baidu',
                                help='the dir with preprocessed baidu reading comprehension data')
@@ -98,7 +100,7 @@ def parse_args():
                                help='the dir to output the results')
     path_settings.add_argument('--summary_dir', default='../data/summary/',
                                help='the dir to write tensorboard summary')
-    path_settings.add_argument('--log_path',
+    path_settings.add_argument('--log_path', default='../log/log',
                                help='path of the log file. If not set, logs are printed to console')
     return parser.parse_args()
 
@@ -153,6 +155,9 @@ def train(args):
     brc_data.convert_to_ids(vocab)
     logger.info('Initialize the model...')
     rc_model = RCModel(vocab, args)
+    if args.restore:
+        logger.info('Restoring the model...')
+        rc_model.restore(model_dir=args.model_dir, model_prefix=args.algo)
     logger.info('Training the model...')
     rc_model.train(brc_data, args.epochs, args.batch_size, save_dir=args.model_dir,
                    save_prefix=args.algo,

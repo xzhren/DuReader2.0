@@ -1,0 +1,18 @@
+2018-07-11 19:51:50,085 - brc - INFO - Running with args : Namespace(algo='BIDAF', batch_size=32, brc_dir='../data/baidu', dev_files=['../data/preprocessed/devset/search.dev.json'], dropout_keep_prob=1, embed_size=300, epochs=5, evaluate=False, gpu='2', hidden_size=150, learning_rate=0.001, log_path='../log/log', max_a_len=200, max_p_len=500, max_p_num=5, max_q_len=60, model_dir='../data/models/', optim='adam', predict=False, prepare=False, restore=True, result_dir='../data/results/', summary_dir='../data/summary/', test_files=['../data/preprocessed/testset/search.test.json'], train=True, train_files=['../data/preprocessed/trainset/search.train.json'], vocab_dir='../data/vocab/', weight_decay=0)
+2018-07-11 19:51:50,085 - brc - INFO - Load data_set and vocab...
+2018-07-11 19:52:37,450 - brc - INFO - Train set size: 86982 questions.
+2018-07-11 19:52:42,393 - brc - INFO - Dev set size: 5000 questions.
+2018-07-11 19:52:42,393 - brc - INFO - Converting text into ids...
+2018-07-11 19:53:06,164 - brc - INFO - Initialize the model...
+2018-07-11 19:53:12,450 - brc - INFO - Time to build graph: 5.84386420249939 s
+2018-07-11 19:53:31,730 - brc - INFO - There are 77148603 parameters in the model
+2018-07-11 19:53:40,320 - brc - INFO - Restoring the model...
+2018-07-11 19:53:46,301 - brc - INFO - Model restored from ../data/models/, with prefix BIDAF
+2018-07-11 19:53:46,301 - brc - INFO - Training the model...
+2018-07-11 19:53:46,301 - brc - INFO - Training the model for epoch 1
+2018-07-11 19:54:55,828 - brc - INFO - Average loss from batch 1 to 50 is 4.770798196792603
+2018-07-11 19:56:03,188 - brc - INFO - Average loss from batch 51 to 100 is 4.6285837411880495
+2018-07-11 19:57:10,850 - brc - INFO - Average loss from batch 101 to 150 is 4.827332344055176
+2018-07-11 19:58:18,224 - brc - INFO - Average loss from batch 151 to 200 is 4.621937165260315
+2018-07-11 19:59:25,737 - brc - INFO - Average loss from batch 201 to 250 is 4.725129013061523
+2018-07-11 20:00:33,645 - brc - INFO - Average loss from batch 251 to 300 is 4.6856421899795535

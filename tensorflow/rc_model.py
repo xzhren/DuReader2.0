@@ -272,12 +272,12 @@ class RCModel(object):
                     self.logger.info('Dev eval result: {}'.format(bleu_rouge))
 
                     if bleu_rouge['Bleu-4'] > max_bleu_4:
-                        self.save(save_dir, save_prefix)
+                        self.save(save_dir, save_prefix, epoch)
                         max_bleu_4 = bleu_rouge['Bleu-4']
                 else:
                     self.logger.warning('No dev set is loaded for evaluation in the dataset!')
             else:
-                self.save(save_dir, save_prefix + '_' + str(epoch))
+                self.save(save_dir, save_prefix + '_' + str(epoch), epoch)
 
     def evaluate(self, eval_batches, result_dir=None, result_prefix=None, save_full_info=False):
         """
@@ -394,11 +394,11 @@ class RCModel(object):
                     max_prob = prob
         return (best_start, best_end), max_prob
 
-    def save(self, model_dir, model_prefix):
+    def save(self, model_dir, model_prefix, step):
         """
         Saves the model into model_dir with model_prefix as the model indicator
         """
-        self.saver.save(self.sess, os.path.join(model_dir, model_prefix))
+        self.saver.save(self.sess, os.path.join(model_dir, model_prefix), global_step=step)
         self.logger.info('Model saved in {}, with prefix {}.'.format(model_dir, model_prefix))
 
     def restore(self, model_dir, model_prefix):
