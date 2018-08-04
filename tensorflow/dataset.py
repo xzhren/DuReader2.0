@@ -142,6 +142,13 @@ class BRCDataset(object):
                 # fake span for some samples, only valid for testing
                 batch_data['start_id'].append(0)
                 batch_data['end_id'].append(0)
+        # self.logger.info("batch_data['raw_data']:" + str(np.array(batch_data['raw_data']).shape))
+        # self.logger.info("batch_data['question_token_ids']:" + str(np.array(batch_data['question_token_ids']).shape))
+        # self.logger.info("batch_data['question_length']:" + str(np.array(batch_data['question_length']).shape))
+        # self.logger.info("batch_data['passage_token_ids']:" + str(np.array(batch_data['passage_token_ids']).shape))
+        # self.logger.info("batch_data['passage_length']:" + str(np.array(batch_data['passage_length']).shape))
+        # self.logger.info("batch_data['start_id']:" + str(np.array(batch_data['start_id']).shape))
+        # self.logger.info("batch_data['end_id']:" + str(np.array(batch_data['end_id']).shape))
         return batch_data
 
     def _dynamic_padding(self, batch_data, pad_id):

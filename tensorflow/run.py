@@ -45,7 +45,7 @@ def parse_args():
                         help='evaluate the model on dev set')
     parser.add_argument('--predict', action='store_true',
                         help='predict the answers for test set with trained model')
-    parser.add_argument('--gpu', type=str, default='2',
+    parser.add_argument('--gpu', type=str, default='1',
                         help='specify gpu device')
 
     train_settings = parser.add_argument_group('train settings')
@@ -59,7 +59,7 @@ def parse_args():
                                 help='dropout keep rate')
     train_settings.add_argument('--batch_size', type=int, default=32,
                                 help='train batch size')
-    train_settings.add_argument('--epochs', type=int, default=10,
+    train_settings.add_argument('--epochs', type=int, default=100,
                                 help='train epochs')
     train_settings.add_argument('--restore', type=bool, default=True,
                                 help='train restore model')
@@ -94,7 +94,7 @@ def parse_args():
                                help='the dir with preprocessed baidu reading comprehension data')
     path_settings.add_argument('--vocab_dir', default='../data/vocab/',
                                help='the dir to save vocabulary')
-    path_settings.add_argument('--model_dir', default='../data/models/',
+    path_settings.add_argument('--model_dir', default='../data/models_/',
                                help='the dir to store models')
     path_settings.add_argument('--result_dir', default='../data/results/',
                                help='the dir to output the results')
@@ -210,7 +210,7 @@ def predict(args):
     test_batches = brc_data.gen_mini_batches('test', args.batch_size,
                                              pad_id=vocab.get_id(vocab.pad_token), shuffle=False)
     rc_model.evaluate(test_batches,
-                      result_dir=args.result_dir, result_prefix='test.predicted')
+                      result_dir=args.result_dir, result_prefix='test.predicted', save_simple_info=True)
 
 
 def run():

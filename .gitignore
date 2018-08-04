@@ -12,4 +12,7 @@ copyright
 *.DS_Store
 data/results/
 data/vocab/
+data/
 *.zip
+log/
+._.TemporaryItems

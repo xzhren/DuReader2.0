@@ -279,7 +279,7 @@ class RCModel(object):
             else:
                 self.save(save_dir, save_prefix + '_' + str(epoch), epoch)
 
-    def evaluate(self, eval_batches, result_dir=None, result_prefix=None, save_full_info=False):
+    def evaluate(self, eval_batches, result_dir=None, result_prefix=None, save_full_info=False, save_simple_info=True):
         """
         Evaluates the model performance on eval_batches and results are saved if specified
         Args:
@@ -309,7 +309,15 @@ class RCModel(object):
             for sample, start_prob, end_prob in zip(batch['raw_data'], start_probs, end_probs):
 
                 best_answer = self.find_best_answer(sample, start_prob, end_prob, padded_p_len)
-                if save_full_info:
+                if save_simple_info:
+                    pred_answers.append({'question_id': sample['question_id'],
+                                         'pred_answers': best_answer,
+                                         'answers': sample['answers'],
+                                         'question': "".join(sample['question_tokens']),
+                                         'documents': ["".join(i) for i in sample['documents'][0]['segmented_paragraphs']]
+                                         # 'documents': "".join(sample['documents'][0]['segmented_paragraphs'][0])
+                                         })
+                elif save_full_info:
                     sample['pred_answers'] = [best_answer]
                     pred_answers.append(sample)
                 else:
@@ -329,7 +337,7 @@ class RCModel(object):
             result_file = os.path.join(result_dir, result_prefix + '.json')
             with open(result_file, 'w') as fout:
                 for pred_answer in pred_answers:
-                    fout.write(json.dumps(pred_answer, ensure_ascii=False) + '\n')
+                    fout.write(json.dumps(pred_answer, ensure_ascii=False, indent=4) + '\n')
 
             self.logger.info('Saving {} results to {}'.format(result_prefix, result_file))
 
