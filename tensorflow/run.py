@@ -155,7 +155,7 @@ def train(args):
     brc_data.convert_to_ids(vocab)
     logger.info('Initialize the model...')
     rc_model = RCModel(vocab, args)
-    if args.restore:
+    if args.restore == True:
         logger.info('Restoring the model...')
         rc_model.restore(model_dir=args.model_dir, model_prefix=args.algo)
     logger.info('Training the model...')

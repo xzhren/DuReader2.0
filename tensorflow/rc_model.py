@@ -58,6 +58,8 @@ class RCModel(object):
         self.max_p_len = args.max_p_len
         self.max_q_len = args.max_q_len
         self.max_a_len = args.max_a_len
+        # summary dir
+        self.summary_dir = args.summary_dir
 
         # the vocab
         self.vocab = vocab
@@ -74,6 +76,7 @@ class RCModel(object):
 
         # initialize the model
         self.sess.run(tf.global_variables_initializer())
+
 
     def _build_graph(self):
         """
@@ -199,6 +202,15 @@ class RCModel(object):
                 l2_loss = tf.add_n([tf.nn.l2_loss(v) for v in self.all_params])
             self.loss += self.weight_decay * l2_loss
 
+        ### summary
+        tf.summary.scalar('start_loss', tf.reduce_mean(self.start_loss)) 
+        tf.summary.scalar('end_loss', tf.reduce_mean(self.end_loss)) 
+        tf.summary.scalar('loss', self.loss) 
+        self.merge_summary = tf.summary.merge_all() 
+        self.train_writer = tf.summary.FileWriter(self.summary_dir+"train", self.sess.graph)
+        self.dev_writer = tf.summary.FileWriter(self.summary_dir+"dev", self.sess.graph)
+        ### end summary
+
     def _create_train_op(self):
         """
         Selects the training algorithm and creates a train operation with it
@@ -232,7 +244,10 @@ class RCModel(object):
                          self.start_label: batch['start_id'],
                          self.end_label: batch['end_id'],
                          self.dropout_keep_prob: dropout_keep_prob}
-            _, loss = self.sess.run([self.train_op, self.loss], feed_dict)
+            _, loss, train_summary = self.sess.run([self.train_op, self.loss, self.merge_summary], feed_dict)
+
+            self.train_writer.add_summary(train_summary, bitx)
+
             total_loss += loss * len(batch['raw_data'])
             total_num += len(batch['raw_data'])
             n_batch_loss += loss
@@ -299,8 +314,10 @@ class RCModel(object):
                          self.start_label: batch['start_id'],
                          self.end_label: batch['end_id'],
                          self.dropout_keep_prob: 1.0}
-            start_probs, end_probs, loss = self.sess.run([self.start_probs,
-                                                          self.end_probs, self.loss], feed_dict)
+            start_probs, end_probs, loss, dev_summary = self.sess.run([self.start_probs, self.end_probs, 
+                                                    self.loss, self.merge_summary], feed_dict)
+
+            self.dev_writer.add_summary(dev_summary, b_itx)
 
             total_loss += loss * len(batch['raw_data'])
             total_num += len(batch['raw_data'])
@@ -311,14 +328,15 @@ class RCModel(object):
                 best_answer = self.find_best_answer(sample, start_prob, end_prob, padded_p_len)
                 if save_simple_info:
                     pred_answers.append({'question_id': sample['question_id'],
-                                         'pred_answers': best_answer,
-                                         'answers': sample['answers'],
+                                         'answers': [best_answer],
+                                         'answers_true': sample['answers'],
                                          'question': "".join(sample['question_tokens']),
                                          'documents': ["".join(i) for i in sample['documents'][0]['segmented_paragraphs']]
                                          # 'documents': "".join(sample['documents'][0]['segmented_paragraphs'][0])
                                          })
                 elif save_full_info:
-                    sample['pred_answers'] = [best_answer]
+                    sample['answers_true'] = sample['answers']
+                    sample['answers'] = [best_answer]
                     pred_answers.append(sample)
                 else:
                     pred_answers.append({'question_id': sample['question_id'],
